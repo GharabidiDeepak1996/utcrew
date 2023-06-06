@@ -1,17 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   ImageBackground,
   Image,
   Text,
-  TextInput,
   TouchableOpacity,
+  StyleSheet,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const [userName, setUserName] = useState("");
+  const [isCheckUserName, setCheckUserName] = useState(false);
 
+  const [password, setPassword] = useState("");
+  const [isCheckPassword, setCheckPassword] = useState(false);
+
+  const [errorUserNameText, setUserNameError] = useState("");
+  const [errorUserPasswordText, setUserPasswordError] = useState("");
+
+  const [passwordVisible, setPasswordVisible] = useState(true);
+
+  const handleSubmitPress = () => {
+    var emailRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+    if (userName.trim() == "") {
+      setUserNameError("Username cannot be empty");
+      setCheckUserName(true);
+      return false;
+    } else if (password.trim() == "") {
+      setUserPasswordError("Password cannot be empty");
+      setCheckPassword(true);
+      return false;
+    } else {
+      //success login
+      navigation.navigate("DrawerNavigationRoutes");
+    }
+  };
   return (
     <View style={{ flex: 1 }}>
       <ImageBackground
@@ -42,36 +72,70 @@ const LoginScreen = () => {
         >
           <Text style={{ color: "gray" }}>Username</Text>
           <TextInput
-            style={{
-              height: 40,
-              borderWidth: 2,
-              padding: 10,
-              borderColor: "gray",
-              borderRadius: 8,
-              borderBottomWidth: 1,
-              marginBottom: 16,
-            }}
-            //onChangeText={onChangeNumber}
+            style={
+              isCheckUserName == true ? styles.errorTextInput : styles.textInput
+            }
             //value={number}
-            keyboardType="numeric"
+            keyboardType="visible-password"
+            selectionColor={"red"}
+            underlineColorAndroid={"transparent"}
+            InputProps={{ disableUnderline: true }}
+            autoCorrect={false}
+            spellCheck={false}
+            cursorColor={"red"}
+            //placeholder='Email/ Mobile'
+            placeholderTextColor={"gary"}
+            returnKeyType="next"
+            onChangeText={(actualData) => {
+              setUserName(actualData), setCheckUserName(false);
+            }}
           />
+          {isCheckUserName == true ? (
+            <Text style={{ color: "red" }}>{errorUserNameText}</Text>
+          ) : null}
 
           <Text style={{ color: "gray" }}>Password</Text>
-          <TextInput
-            style={{
-              height: 40,
-              borderWidth: 2,
-              padding: 10,
-              borderColor: "gray",
-              borderRadius: 8,
-              borderBottomWidth: 1,
-              borderTopWidth: 1,
-              marginBottom: 16,
-            }}
-            //onChangeText={onChangeNumber}
-            //value={number}
-            keyboardType="numeric"
-          />
+          <View style={{ flexDirection: "row" }}>
+            <TextInput
+              style={
+                isCheckPassword == true
+                  ? styles.errorTextInput
+                  : styles.textInput
+              }
+              //value={number}
+              keyboardType="default"
+              underlineColorAndroid={"transparent"}
+              autoCorrect={false}
+              spellCheck={false}
+              secureTextEntry={passwordVisible}
+              selectionColor={"red"}
+              cursorColor={"red"}
+              placeholderTextColor={"gary"}
+              returnKeyType="done"
+              onChangeText={(actualData) => {
+                setPassword(actualData), setCheckPassword(false);
+              }}
+            />
+            <TouchableOpacity
+              style={{ position: "absolute", right: 25, top: 7 }}
+              onPress={() => {
+                setPasswordVisible(!passwordVisible);
+              }}
+            >
+              <MaterialCommunityIcons
+                name={
+                  passwordVisible === false ? "eye-outline" : "eye-off-outline"
+                }
+                color={"red"}
+                size={26}
+              />
+            </TouchableOpacity>
+          </View>
+          {isCheckPassword == true ? (
+            <Text style={{ color: "red", marginBottom: 12 }}>
+              {errorUserPasswordText}
+            </Text>
+          ) : null}
 
           <TouchableOpacity
             style={{
@@ -81,7 +145,7 @@ const LoginScreen = () => {
               borderRadius: 6,
               marginBottom: 16,
             }}
-            //onPress={onPress}
+            onPress={handleSubmitPress}
           >
             <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>
               Login
@@ -118,4 +182,26 @@ const LoginScreen = () => {
   );
 };
 
+const styles = StyleSheet.create({
+  textInput: {
+    height: 40,
+    width: "100%",
+    borderWidth: 2,
+    padding: 10,
+    borderColor: "gray",
+    borderRadius: 8,
+    borderBottomWidth: 1,
+    marginBottom: 16,
+    color: "white",
+  },
+  errorTextInput: {
+    height: 40,
+    borderWidth: 2,
+    width: "100%",
+    padding: 10,
+    borderColor: "red",
+    borderRadius: 8,
+    borderBottomWidth: 1,
+  },
+});
 export default LoginScreen;

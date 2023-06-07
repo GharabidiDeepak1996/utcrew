@@ -11,6 +11,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { axiosGet } from "../apis/useAxios";
+import * as Location from "expo-location";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -30,18 +32,35 @@ const LoginScreen = () => {
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
     if (userName.trim() == "") {
-      setUserNameError("Username cannot be empty");
+      setUserNameError("Please enter username");
       setCheckUserName(true);
       return false;
     } else if (password.trim() == "") {
-      setUserPasswordError("Password cannot be empty");
+      setUserPasswordError("Please enter password");
       setCheckPassword(true);
       return false;
     } else {
-      //success login
-      navigation.navigate("DrawerNavigationRoutes");
+      loginApi();
     }
   };
+
+  async function loginApi() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+    let location = await Location.getCurrentPositionAsync({});
+
+    const getLoginDetails = await axiosGet(
+      `User/GetLoginInfoV3/${userName}/${password}/${location.coords.latitude}/${location.coords.longitude}`
+    );
+
+    if (getLoginDetails.IsSuccess) {
+      //Dashboard.
+      // navigation.navigate("DrawerNavigationRoutes");
+    }
+  }
   return (
     <View style={{ flex: 1 }}>
       <ImageBackground

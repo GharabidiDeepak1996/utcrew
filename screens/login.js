@@ -14,7 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { axiosGet } from "../apis/useAxios";
 import * as Location from "expo-location";
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const navigation = useNavigation();
   const [userName, setUserName] = useState("");
   const [isCheckUserName, setCheckUserName] = useState(false);
@@ -58,7 +58,8 @@ const LoginScreen = () => {
 
     if (getLoginDetails.IsSuccess) {
       //Dashboard.
-      // navigation.navigate("DrawerNavigationRoutes");
+
+      navigation.navigate("DrawerNavigationRoutes");
     }
   }
   return (

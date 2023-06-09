@@ -13,6 +13,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { axiosGet } from "../apis/useAxios";
 import * as Location from "expo-location";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -52,15 +53,29 @@ const LoginScreen = () => {
     }
     let location = await Location.getCurrentPositionAsync({});
 
-    const getLoginDetails = await axiosGet(
+    axiosGet(
       `User/GetLoginInfoV3/${userName}/${password}/${location.coords.latitude}/${location.coords.longitude}`
-    );
+    ).then((response) => {
+      const { IsSuccess, Users } = { ...response };
+      const { Contact } = { ...Users };
+      const { Email, Mobile } = { ...Contact };
 
-    if (getLoginDetails.IsSuccess) {
-      //Dashboard.
-      // navigation.navigate("DrawerNavigationRoutes");
-    }
+      if (IsSuccess) {
+        console.log("loginData", Email);
+
+        AsyncStorage.setItem("UserEmail", Email);
+        AsyncStorage.setItem("UserMobile", Mobile);
+        AsyncStorage.setItem("isLogged", JSON.stringify(true));
+
+        AsyncStorage.getItem("isLogged", (err, value) => {
+          console.log("LoginScrenlogg", value);
+        });
+
+        navigation.navigate("DrawerNavigationRoutes");
+      }
+    });
   }
+
   return (
     <View style={{ flex: 1 }}>
       <ImageBackground

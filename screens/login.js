@@ -57,7 +57,7 @@ const LoginScreen = () => {
       `User/GetLoginInfoV3/${userName}/${password}/${location.coords.latitude}/${location.coords.longitude}`
     ).then((response) => {
       const { IsSuccess, Users } = { ...response };
-      const { Contact } = { ...Users };
+      const { Contact, Id, AirlineCode, FullName } = { ...Users };
       const { Email, Mobile } = { ...Contact };
 
       if (IsSuccess) {
@@ -65,6 +65,9 @@ const LoginScreen = () => {
 
         AsyncStorage.setItem("UserEmail", Email);
         AsyncStorage.setItem("UserMobile", Mobile);
+        AsyncStorage.setItem("UserId", JSON.stringify(Id));
+        AsyncStorage.setItem("FullName", FullName);
+        AsyncStorage.setItem("AirlineCode", AirlineCode);
         AsyncStorage.setItem("isLogged", JSON.stringify(true));
 
         AsyncStorage.getItem("isLogged", (err, value) => {

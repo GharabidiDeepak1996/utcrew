@@ -225,7 +225,7 @@ const Registration = ({ navigation, route }) => {
           //   setCheckAirline(false);
           // }}
           onPressIn={() => {
-            navigation.navigate("search");
+            navigation.navigate("search", { id: "0" });
           }}
           keyboardType="visible-password"
           autoCorrect={false}

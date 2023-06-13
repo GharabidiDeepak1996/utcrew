@@ -7,25 +7,46 @@ import {
   StyleSheet,
   Text,
 } from "react-native";
-import { axiosGet } from "../apis/useAxios";
+import { axiosGet, axiosPost } from "../apis/useAxios";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as Location from "expo-location";
 
-const Search = ({ navigation }) => {
+const Search = ({ route, navigation }) => {
   //const navigation = useNavigation();
-
+  const { id } = route.params;
   const [search, setSearch] = useState("");
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [masterDataSource, setMasterDataSource] = useState([]);
 
   useEffect(() => {
-    getAirLineData();
+    if (id == 0) {
+      getAirLineData();
+    } else {
+      getAirPort();
+    }
   }, []);
 
   async function getAirLineData() {
     const airLineData = await axiosGet("Common/GetAirline");
     setFilteredDataSource(airLineData.Airline);
     setMasterDataSource(airLineData.Airline);
+  }
+
+  async function getAirPort() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+    let location = await Location.getCurrentPositionAsync({});
+
+    const airLineData = await axiosPost("Common/GetAirportV3", {
+      Latitude: location.coords.latitude,
+      Longitude: location.coords.longitude,
+    });
+    setFilteredDataSource(airLineData.Airport);
+    setMasterDataSource(airLineData.Airport);
   }
 
   const searchFilterFunction = (text) => {
@@ -44,9 +65,21 @@ const Search = ({ navigation }) => {
       //OR
 
       const newData = masterDataSource.filter(function (item) {
-        const itemData = item.Name ? item.Name.toUpperCase() : "".toUpperCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
+        //const itemData = item.Code ? item.Code.toUpperCase() : "".toUpperCase();
+        if (id == 0) {
+          const itemData = item.Name
+            ? item.Name.toUpperCase()
+            : "".toUpperCase();
+          const textData = text.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        } else {
+          const itemData = item.Code
+            ? item.Code.toUpperCase()
+            : "".toUpperCase();
+          const textData = text.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        }
+        return null;
       });
       setFilteredDataSource(newData);
       setSearch(text);
@@ -73,10 +106,19 @@ const Search = ({ navigation }) => {
         <Text
           style={styles.itemStyle}
           onPress={() => {
-            navigation.navigate("registration", {
-              airlineId: item.Id,
-              airlineName: item.Name,
-            });
+            //0 - for registration, 1 - for findmyride
+            if (id == 0) {
+              navigation.navigate("registration", {
+                airlineId: item.Id,
+                airlineName: item.Name,
+              });
+            } else if (id == 1) {
+              navigation.navigate("FindMyRide", {
+                airportId: item.Id,
+                airportCode: item.Code,
+                airportName: item.Name,
+              });
+            }
 
             //getItem(item)
           }}

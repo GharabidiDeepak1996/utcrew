@@ -110,7 +110,14 @@ const FindMyRide = ({ navigation, route }) => {
     >
       <View style={{ flexDirection: "row" }}>
         <MaterialIcons name="flight" color={"gray"} size={18} />
-        <Text style={styles.title}>{airlineInfo}</Text>
+        <Text
+          onPress={() => {
+            navigation.navigate("selectedrides");
+          }}
+          style={styles.title}
+        >
+          {airlineInfo}
+        </Text>
       </View>
       <View style={{ flexDirection: "row" }}>
         <AntDesign name="clockcircle" size={18} color="gray" />

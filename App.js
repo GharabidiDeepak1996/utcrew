@@ -10,6 +10,7 @@ import SplashScreen from "./screens/splashscreen";
 import LoginScreen from "./screens/login";
 import Registration from "./screens/registration";
 import Search from "./components/search";
+import SelectedRides from "./screens/selectedrides";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ export default function App() {
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="registration" component={Registration} />
         <Stack.Screen name="search" component={Search} />
+        <Stack.Screen name="selectedrides" component={SelectedRides} />
 
         <Stack.Screen
           name="DrawerNavigationRoutes"

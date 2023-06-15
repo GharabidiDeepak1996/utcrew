@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { ImageBackground, Text, View, StyleSheet } from "react-native";
+import {
+  ImageBackground,
+  ActivityIndicator,
+  View,
+  StyleSheet,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { axiosPost } from "../apis/useAxios";
 
 const SplashScreen = () => {
+  //state for activity animation
+  const [animating, setAnimating] = useState(true);
   const navigation = useNavigation();
 
   const getAppVersionDetails = async () => {
@@ -15,7 +22,8 @@ const SplashScreen = () => {
       });
 
       if (getAppVerDetails.IsSuccess == true) {
-        navigation.navigate("introslider");
+        setAnimating(false);
+        navigation.navigate("Auth");
       } else {
         console.log("LoginScreen-AppVersionDetails ", "something went wrong.");
       }
@@ -29,11 +37,12 @@ const SplashScreen = () => {
 
   useEffect(() => {
     getAppVersionDetails();
-    // setTimeout(() => {
-    //   //Add slider screen
-    //   navigation.navigate("introslider");
-    // }, 3000);
-  }, []);
+    //   setTimeout(() =>{
+    //     setAnimating(false)
+    //     navigation.navigate("Auth")
+    //     //navigation.navigate("LoginScreen")
+    // },1000)
+  });
 
   return (
     <View style={styles.container}>
@@ -41,7 +50,14 @@ const SplashScreen = () => {
         source={require("../assets/crew_login_logo.png")}
         resizeMode="cover"
         style={styles.image}
-      ></ImageBackground>
+      >
+        <ActivityIndicator
+          animating={animating}
+          color="black"
+          size="large"
+          //style={styles.activityIndicator}
+        />
+      </ImageBackground>
     </View>
   );
 };

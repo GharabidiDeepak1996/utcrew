@@ -1,15 +1,14 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState } from "react";
 import { View, Image, Text } from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
-import { useNavigation } from "@react-navigation/native";
+//import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const IntroSlider = () => {
-  const navigation = useNavigation();
+const IntroSlider = ({ navigation }) => {
+  // const navigation = useNavigation();
 
   const [showRealApp, setShowRealApp] = useState();
   const [isLogged, setIsLogged] = useState(true);
-  const [navigatePath, setNavigatePath] = useState("");
 
   const onDone = () => {
     setShowRealApp(true);

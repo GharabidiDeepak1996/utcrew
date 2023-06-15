@@ -121,7 +121,7 @@ const LoginScreen = () => {
             spellCheck={false}
             cursorColor={"red"}
             //placeholder='Email/ Mobile'
-            placeholderTextColor={"gary"}
+            placeholderTextColor={"#808080"}
             returnKeyType="next"
             onChangeText={(actualData) => {
               setUserName(actualData), setCheckUserName(false);
@@ -147,7 +147,7 @@ const LoginScreen = () => {
               secureTextEntry={passwordVisible}
               selectionColor={"red"}
               cursorColor={"red"}
-              placeholderTextColor={"gary"}
+              placeholderTextColor={"#808080"}
               returnKeyType="done"
               onChangeText={(actualData) => {
                 setPassword(actualData), setCheckPassword(false);

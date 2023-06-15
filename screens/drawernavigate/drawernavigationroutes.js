@@ -24,7 +24,7 @@ function DrawerNavigationRoutes() {
       }}
       drawerContent={NavigationDrawerProfileStructure}
       screenOptions={{ headerShown: false }}
-      initialRouteName="findmyride"
+      // initialRouteName="findmyride"
     >
       <Drawer.Screen name="findmyride" component={findMyRideScreenStack} />
       {/* <Drawer.Screen name="feedback" component={feedbackScreenStack} />
@@ -36,7 +36,8 @@ function DrawerNavigationRoutes() {
 
 function findMyRideScreenStack({ navigation }) {
   return (
-    <Stack.Navigator initialRouteName="FindMyRide">
+    <Stack.Navigator //initialRouteName="FindMyRide"
+    >
       <Stack.Screen
         name="FindMyRide"
         component={FindMyRide}

@@ -6,6 +6,7 @@ import {
   TextInput,
   StyleSheet,
   Text,
+  ActivityIndicator,
 } from "react-native";
 import { axiosGet, axiosPost } from "../apis/useAxios";
 import { useNavigation } from "@react-navigation/native";
@@ -14,6 +15,7 @@ import * as Location from "expo-location";
 
 const Search = ({ route, navigation }) => {
   //const navigation = useNavigation();
+  const [animating, setAnimating] = useState(true);
   const { id } = route.params;
   const [search, setSearch] = useState("");
   const [filteredDataSource, setFilteredDataSource] = useState([]);
@@ -41,12 +43,18 @@ const Search = ({ route, navigation }) => {
     }
     let location = await Location.getCurrentPositionAsync({});
 
-    const airLineData = await axiosPost("Common/GetAirportV3", {
+    const airPortList = await axiosPost("Common/GetAirportV3", {
       Latitude: location.coords.latitude,
       Longitude: location.coords.longitude,
     });
-    setFilteredDataSource(airLineData.Airport);
-    setMasterDataSource(airLineData.Airport);
+
+    if (airPortList.IsSuccess) {
+      setAnimating(false);
+      setFilteredDataSource(airPortList.Airport);
+      setMasterDataSource(airPortList.Airport);
+    } else {
+      setAnimating(false);
+    }
   }
 
   const searchFilterFunction = (text) => {
@@ -148,7 +156,7 @@ const Search = ({ route, navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
       <View style={styles.container}>
         <TextInput
           style={styles.textInputStyle}
@@ -160,10 +168,16 @@ const Search = ({ route, navigation }) => {
         <FlatList
           data={filteredDataSource}
           keyExtractor={(item, index) => {
-            index.toString(), console.log(item);
+            return index.toString();
           }}
           ItemSeparatorComponent={ItemSeparatorView}
           renderItem={ItemView}
+        />
+        <ActivityIndicator
+          animating={animating}
+          color="white"
+          size="large"
+          //style={styles.activityIndicator}
         />
       </View>
     </SafeAreaView>

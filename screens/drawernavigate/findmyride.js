@@ -20,20 +20,19 @@ const FindMyRide = ({ navigation, route }) => {
   const [shouldShow, setShouldShow] = useState(false);
   const [nearestAirportCode, setNearestAirportCode] = useState("");
   const [crewAirLineScheduledJob, setCrewAirLineScheduledJob] = useState([]);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [userId, setUserId] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [airlineCode, setAirLineCode] = useState("");
+  const [date, setDate] = useState("");
 
   async function getAirportCode() {
-    var d = new Date();
-    var NextDate = new Date(d.getTime() + 1000 * 60 * 60 * 24);
-    var date = new Date(NextDate); //tomorrow Date
-    setSelection("today");
-    setStartDate(d);
-    setEndDate(date);
+    const userId = await AsyncStorage.getItem("UserId");
+    const fullName = await AsyncStorage.getItem("FullName");
+    const airLineCode = await AsyncStorage.getItem("AirlineCode");
 
+    var todayDate = new Date();
+    var tomorrowDate = new Date(todayDate.getTime() + 1000 * 60 * 60 * 24);
+    //var tomorrowDate = new Date(date); //tomorrow Date
+
+    setSelection("today");
+    setDate(todayDate);
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission to access location was denied");
@@ -42,8 +41,15 @@ const FindMyRide = ({ navigation, route }) => {
     let location = await Location.getCurrentPositionAsync({});
 
     if (airportCode != undefined) {
-      setNearestAirportCode(airportCode);
-      getCrewAirline();
+      setNearestAirportCode(airportCode); //first time can be render
+      getCrewAirline(
+        todayDate,
+        tomorrowDate,
+        airportCode,
+        userId,
+        fullName,
+        airLineCode
+      );
     } else {
       axiosPost("Common/GetNearestAirportCodeV1", {
         Latitude: location.coords.latitude,
@@ -53,52 +59,60 @@ const FindMyRide = ({ navigation, route }) => {
         if (IsSuccess) {
           setNearestAirportCode(NearestAirport.NearestAirportCode);
           //call jobList for respective airport.
-          getCrewAirline();
+          getCrewAirline(
+            todayDate,
+            tomorrowDate,
+            NearestAirport.NearestAirportCode,
+            userId,
+            fullName,
+            airLineCode
+          );
         }
       });
     }
   }
-  function getCrewAirline() {
-    AsyncStorage.getItem("UserId", (err, val) => {
-      setUserId(val);
-    });
-    AsyncStorage.getItem("FullName", (err, val) => {
-      setFullName(val);
-    });
-    AsyncStorage.getItem("AirlineCode", (err, val) => {
-      setAirLineCode(val);
-    });
 
+  function getCrewAirline(
+    todayDate,
+    tomorrowDate,
+    airportCode,
+    userId,
+    fullName,
+    airLineCode
+  ) {
     console.log(
       "ActualDataWhatWreGot",
-      moment(startDate, "YYYY-MM-DDTHH:mm:ss.sssZ").format("MM/DD/YYYY"),
-      endDate,
-      nearestAirportCode,
+      moment(todayDate, "YYYY-MM-DDTHH:mm:ss.sssZ").format("MM/DD/YYYY"),
+      moment(tomorrowDate, "YYYY-MM-DDTHH:mm:ss.sssZ").format("MM/DD/YYYY"),
+      airportCode,
       userId,
       fullName,
-      airlineCode
+      airLineCode
     );
 
     axiosPost("Airlines/GetCrewAirlines", {
-      StartDate: moment(startDate, "YYYY-MM-DDTHH:mm:ss.sssZ").format(
+      StartDate: moment(todayDate, "YYYY-MM-DDTHH:mm:ss.sssZ").format(
         "MM/DD/YYYY"
       ),
-      EndDate: moment(endDate, "YYYY-MM-DDTHH:mm:ss.sssZ").format("MM/DD/YYYY"),
+      EndDate: moment(tomorrowDate, "YYYY-MM-DDTHH:mm:ss.sssZ").format(
+        "MM/DD/YYYY"
+      ),
       AirportCode: nearestAirportCode,
       UserId: userId,
       UserName: fullName,
-      AirlineCode: airlineCode,
+      AirlineCode: airLineCode,
     }).then((response) => {
       const { IsSuccess, CrewAirlines } = { ...response };
       {
-        console.log("findJobLIst", CrewAirlines);
+        console.log("findJobLIst124", response);
+
         IsSuccess
-          ? setCrewAirLineScheduledJob(CrewAirlines)
-          : setCrewAirLineScheduledJob(CrewAirlines);
+          ? setCrewAirLineScheduledJob([...CrewAirlines])
+          : setCrewAirLineScheduledJob([...CrewAirlines]);
       }
     });
   }
-  const Item = ({ airlineInfo, flightTime }) => (
+  const Item = ({ airlineInfo, flightTime, rideType }) => (
     <View
       style={{
         flexDirection: "row",
@@ -109,10 +123,14 @@ const FindMyRide = ({ navigation, route }) => {
       }}
     >
       <View style={{ flexDirection: "row" }}>
-        <MaterialIcons name="flight" color={"gray"} size={18} />
+        {rideType == "DEPARTURE" ? (
+          <MaterialIcons name="flight-takeoff" color={"gray"} size={18} />
+        ) : rideType == "ARRIVAL" ? (
+          <MaterialIcons name="flight-land" color={"gray"} size={18} />
+        ) : null}
         <Text
           onPress={() => {
-            navigation.navigate("selectedrides");
+            navigation.navigate("SelectedRides");
           }}
           style={styles.title}
         >
@@ -310,7 +328,7 @@ const FindMyRide = ({ navigation, route }) => {
           }}
           underlineColorAndroid="transparent"
           value={nearestAirportCode}
-          onPressIn={() => navigation.navigate("search", { id: "1" })}
+          onPressIn={() => navigation.push("search", { id: "1" })}
         />
         <View
           style={{
@@ -329,16 +347,27 @@ const FindMyRide = ({ navigation, route }) => {
             <RadioButton
               value="yesterday"
               status={isSelected === "yesterday" ? "checked" : "unchecked"}
-              onPress={() => {
-                var d = new Date();
-                var previousDate = new Date(d.getTime() - 1000 * 60 * 60 * 24);
-                var date = new Date(previousDate); //yesterday Date
-                console.log(date);
+              onPress={async () => {
+                const userId = await AsyncStorage.getItem("UserId");
+                const fullName = await AsyncStorage.getItem("FullName");
+                const airLineCode = await AsyncStorage.getItem("AirlineCode");
+
+                var todayDate = new Date();
+                var yesterdayDate = new Date(
+                  todayDate.getTime() - 1000 * 60 * 60 * 24
+                );
+                //var date = new Date(previousDate); //yesterday Date
                 setSelection("yesterday");
-                setStartDate(date);
-                setEndDate(d);
-                setNearestAirportCode(nearestAirportCode);
-                getCrewAirline();
+                setDate(yesterdayDate);
+
+                getCrewAirline(
+                  yesterdayDate,
+                  todayDate,
+                  nearestAirportCode,
+                  userId,
+                  fullName,
+                  airLineCode
+                );
               }}
               color="red"
             />
@@ -355,15 +384,26 @@ const FindMyRide = ({ navigation, route }) => {
             <RadioButton
               value="today"
               status={isSelected === "today" ? "checked" : "unchecked"}
-              onPress={() => {
-                var d = new Date();
-                var NextDate = new Date(d.getTime() + 1000 * 60 * 60 * 24);
-                var date = new Date(NextDate); //tomorrow Date
+              onPress={async () => {
+                const userId = await AsyncStorage.getItem("UserId");
+                const fullName = await AsyncStorage.getItem("FullName");
+                const airLineCode = await AsyncStorage.getItem("AirlineCode");
+
+                var todayDate = new Date();
+                var tomorrowDate = new Date(
+                  todayDate.getTime() + 1000 * 60 * 60 * 24
+                );
+                // var date = new Date(NextDate); //tomorrow Date
                 setSelection("today");
-                setStartDate(d);
-                setEndDate(date);
-                setNearestAirportCode(nearestAirportCode);
-                getCrewAirline();
+                setDate(todayDate);
+                getCrewAirline(
+                  todayDate,
+                  tomorrowDate,
+                  nearestAirportCode,
+                  userId,
+                  fullName,
+                  airLineCode
+                );
               }}
               color="red"
             />
@@ -380,19 +420,32 @@ const FindMyRide = ({ navigation, route }) => {
             <RadioButton
               value="tomorrow"
               status={isSelected === "tomorrow" ? "checked" : "unchecked"}
-              onPress={() => {
+              onPress={async () => {
+                const userId = await AsyncStorage.getItem("UserId");
+                const fullName = await AsyncStorage.getItem("FullName");
+                const airLineCode = await AsyncStorage.getItem("AirlineCode");
+
+                // var todayDate = new Date();
+                // var Next2nextDate = new Date(
+                //   todayDate.getTime() + 1000 * 60 * 60 * 48
+                // );
                 var d = new Date();
                 var NextDate = new Date(d.getTime() + 1000 * 60 * 60 * 24);
-                var date = new Date(NextDate); //tomorrow Date
+                //var date = new Date(NextDate); //tomorrow Date
 
                 var Next2nextDate = new Date(d.getTime() + 1000 * 60 * 60 * 48);
-                var nextDate = new Date(Next2nextDate); //tomorrow Date
+                //var nextDate = new Date(Next2nextDate); //tomorrow Date
 
                 setSelection("tomorrow");
-                setStartDate(date);
-                setEndDate(nextDate);
-                setNearestAirportCode(nearestAirportCode);
-                getCrewAirline();
+                setDate(Next2nextDate);
+                getCrewAirline(
+                  NextDate,
+                  Next2nextDate,
+                  nearestAirportCode,
+                  userId,
+                  fullName,
+                  airLineCode
+                );
               }}
               color="red"
             />
@@ -401,7 +454,15 @@ const FindMyRide = ({ navigation, route }) => {
         </View>
         {/* CrewAirline List */}
         {crewAirLineScheduledJob?.length == 0 ? (
-          <Text style={{ color: "white" }}>No Job found</Text>
+          <Text
+            style={{
+              color: "white",
+              alignSelf: "center",
+              marginTop: 35,
+            }}
+          >
+            No Job found
+          </Text>
         ) : (
           <View //main container
             style={{
@@ -417,9 +478,7 @@ const FindMyRide = ({ navigation, route }) => {
               }}
             >
               <Text style={{ color: "white" }}>
-                {moment(startDate, "YYYY-MM-DDTHH:mm:ss.sssZ").format(
-                  "MM/DD/YYYY"
-                )}
+                {moment(date, "YYYY-MM-DDTHH:mm:ss.sssZ").format("MM/DD/YYYY")}
               </Text>
             </View>
             <FlatList
@@ -429,6 +488,7 @@ const FindMyRide = ({ navigation, route }) => {
                 <Item
                   airlineInfo={item.AirlineInfo}
                   flightTime={item.FlightTime}
+                  rideType={item.RideType}
                 />
               )}
               ItemSeparatorComponent={ItemSeparatorView}

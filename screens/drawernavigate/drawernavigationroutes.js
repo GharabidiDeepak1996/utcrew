@@ -1,5 +1,6 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View, Image, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -14,19 +15,21 @@ import FindMyRide from "../drawernavigate/findmyride";
 import FeedBack from "./feedback";
 import About from "./about";
 import LogOut from "./logout";
+import SelectedRides from "../selectedrides";
 
 function DrawerNavigationRoutes() {
   return (
     <Drawer.Navigator
-      drawerContentOptions={{
-        activeTintColor: "#e91e63",
-        itemStyle: { marginVertical: 5 },
-      }}
+      // drawerContentOptions={{
+      //   activeTintColor: "#e91e63",
+      //   itemStyle: { marginVertical: 5 },
+      // }}
       drawerContent={NavigationDrawerProfileStructure}
       screenOptions={{ headerShown: false }}
-      // initialRouteName="findmyride"
+      initialRouteName="Findmyride"
     >
-      <Drawer.Screen name="findmyride" component={findMyRideScreenStack} />
+      <Drawer.Screen name="Findmyride" component={FindMyRideScreenStack} />
+      <Drawer.Screen name="SelectedRides" component={SelectedRideStack} />
       {/* <Drawer.Screen name="feedback" component={feedbackScreenStack} />
       <Drawer.Screen name="about" component={feedbackScreenStack} />
       <Drawer.Screen name="logout" component={feedbackScreenStack} /> */}
@@ -34,7 +37,7 @@ function DrawerNavigationRoutes() {
   );
 }
 
-function findMyRideScreenStack({ navigation }) {
+function FindMyRideScreenStack({ navigation }) {
   return (
     <Stack.Navigator //initialRouteName="FindMyRide"
     >
@@ -61,6 +64,43 @@ function findMyRideScreenStack({ navigation }) {
   );
 }
 
+function SelectedRideStack({ navigation }) {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Selectedrides"
+        component={SelectedRides}
+        options={{
+          headerTitle: "Select Ride",
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                height: 40,
+                marginRight: 18,
+              }}
+              activeOpacity={0.5}
+              onPress={() => {
+                navigation.navigate("FindMyRide");
+              }}
+            >
+              <Ionicons name="md-arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+            // <NavigationDrawerStructure navigationProps={navigation} />
+          ),
+          headerStyle: {
+            backgroundColor: "#454545", //Set Header color
+          },
+          headerTintColor: "white", //Set Header text color
+          headerTitleStyle: {
+            fontWeight: "bold", //Set Header text style
+          },
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
 function feedbackScreenStack({ navigation }) {
   return (
     <Stack.Navigator

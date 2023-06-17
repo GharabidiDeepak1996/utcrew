@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -17,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const [animating, setAnimating] = useState(false);
   const [userName, setUserName] = useState("");
   const [isCheckUserName, setCheckUserName] = useState(false);
 
@@ -46,6 +49,8 @@ const LoginScreen = () => {
   };
 
   async function loginApi() {
+    setAnimating(true);
+
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission to access location was denied");
@@ -56,11 +61,12 @@ const LoginScreen = () => {
     axiosGet(
       `User/GetLoginInfoV3/${userName}/${password}/${location.coords.latitude}/${location.coords.longitude}`
     ).then((response) => {
-      const { IsSuccess, Users } = { ...response };
+      const { IsSuccess, Users, ResponseMessage } = { ...response };
       const { Contact, Id, AirlineCode, FullName } = { ...Users };
       const { Email, Mobile } = { ...Contact };
 
       if (IsSuccess) {
+        setAnimating(false);
         console.log("loginData", Email);
 
         AsyncStorage.setItem("UserEmail", Email);
@@ -68,17 +74,16 @@ const LoginScreen = () => {
         AsyncStorage.setItem("UserId", JSON.stringify(Id));
         AsyncStorage.setItem("FullName", FullName);
         AsyncStorage.setItem("AirlineCode", AirlineCode);
+
         AsyncStorage.setItem("isLogged", JSON.stringify(true));
 
-        AsyncStorage.getItem("isLogged", (err, value) => {
-          console.log("LoginScrenlogg", value);
-        });
-
         navigation.navigate("DrawerNavigationRoutes");
+      } else {
+        ToastAndroid.show(ResponseMessage, ToastAndroid.SHORT);
+        setAnimating(false);
       }
     });
   }
-
   return (
     <View style={{ flex: 1 }}>
       <ImageBackground
@@ -214,6 +219,13 @@ const LoginScreen = () => {
             Forgot password?
           </Text>
         </View>
+
+        <ActivityIndicator
+          animating={animating}
+          color="black"
+          size="large"
+          //style={styles.activityIndicator}
+        />
       </ImageBackground>
     </View>
   );

@@ -16,7 +16,7 @@ const NavigationDrawerStructure = (props) => {
           source={{
             uri: "https://raw.githubusercontent.com/AboutReact/sampleresource/master/drawerWhite.png",
           }}
-          style={{ width: 25, height: 25 }}
+          style={{ width: 25, height: 25, marginRight: 16 }}
         />
       </TouchableOpacity>
     </View>

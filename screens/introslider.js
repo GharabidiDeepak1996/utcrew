@@ -1,23 +1,20 @@
 import React, { useState } from "react";
 import { View, Image, Text } from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
-//import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const IntroSlider = ({ navigation }) => {
-  // const navigation = useNavigation();
-
-  const [showRealApp, setShowRealApp] = useState();
-  const [isLogged, setIsLogged] = useState(true);
+const IntroSlider = () => {
+  const navigation = useNavigation();
 
   const onDone = () => {
-    setShowRealApp(true);
     introSliderBoolean(true);
+    navigation.navigate("Auth", { isSlide: true });
   };
 
   const onSkip = () => {
-    setShowRealApp(true);
     introSliderBoolean(true);
+    navigation.navigate("Auth", { isSlide: true });
   };
 
   const introSliderBoolean = async (value) => {
@@ -28,19 +25,6 @@ const IntroSlider = ({ navigation }) => {
     }
   };
 
-  AsyncStorage.getItem("isIntroRead", (err, value) => {
-    if (value != null) {
-      setShowRealApp(true);
-    }
-  });
-
-  AsyncStorage.getItem("isLogged", (err, value) => {
-    if (value) {
-      setIsLogged(value);
-    } else {
-      setIsLogged(false);
-    }
-  });
   const RenderItem = ({ item }) => {
     const { imagePath, text } = { ...item };
     return (
@@ -62,13 +46,7 @@ const IntroSlider = ({ navigation }) => {
     );
   };
 
-  return showRealApp ? (
-    isLogged ? (
-      navigation.navigate("DrawerNavigationRoutes")
-    ) : (
-      navigation.navigate("LoginScreen")
-    )
-  ) : (
+  return (
     <AppIntroSlider
       data={slider}
       renderItem={RenderItem}

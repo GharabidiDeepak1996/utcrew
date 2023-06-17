@@ -27,7 +27,6 @@ const SplashScreen = () => {
       } else {
         console.log("LoginScreen-AppVersionDetails ", "something went wrong.");
       }
-      console.log("LoginScreen-AppVersionDetails ", getAppVerDetails.IsSuccess);
     } catch (error) {
       console.log("LoginScreen-AppVersionDetails ", error);
     } finally {

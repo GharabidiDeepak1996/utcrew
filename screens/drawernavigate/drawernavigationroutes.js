@@ -17,19 +17,22 @@ import About from "./about";
 import LogOut from "./logout";
 import SelectedRides from "../selectedrides";
 
-function DrawerNavigationRoutes() {
+function DrawerNavigationRoutes({ route, navigation }) {
+  //console.log("params", route.params);
+
   return (
     <Drawer.Navigator
       // drawerContentOptions={{
       //   activeTintColor: "#e91e63",
       //   itemStyle: { marginVertical: 5 },
       // }}
+      //drawerContent={(props) => <CustomDrawerContent {...props} />}>
       drawerContent={NavigationDrawerProfileStructure}
       screenOptions={{ headerShown: false }}
       initialRouteName="Findmyride"
     >
       <Drawer.Screen name="Findmyride" component={FindMyRideScreenStack} />
-      <Drawer.Screen name="SelectedRides" component={SelectedRideStack} />
+      <Drawer.Screen name="Selectedrides" component={SelectedRideStack} />
       {/* <Drawer.Screen name="feedback" component={feedbackScreenStack} />
       <Drawer.Screen name="about" component={feedbackScreenStack} />
       <Drawer.Screen name="logout" component={feedbackScreenStack} /> */}
@@ -64,12 +67,15 @@ function FindMyRideScreenStack({ navigation }) {
   );
 }
 
-function SelectedRideStack({ navigation }) {
+function SelectedRideStack({ route, navigation }) {
+  // console.log("params546", route.params);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Selectedrides"
+        name="SelectedRides"
         component={SelectedRides}
+        initialParams={{ ridesDetails: route.params }}
         options={{
           headerTitle: "Select Ride",
           headerLeft: () => (

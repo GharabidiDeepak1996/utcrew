@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 
 const Stack = createNativeStackNavigator();
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import TrackVehicle from "./screens/mapview";
 
 export default function App() {
   const [isLogged, setIslogged] = useState(undefined);
@@ -106,6 +107,7 @@ export default function App() {
         />
 
         <Stack.Screen name="search" component={Search} />
+        <Stack.Screen name="trackVehicle" component={TrackVehicle} />
         {/* <Stack.Screen
           name="selectedrides"
           component={SelectedRides}

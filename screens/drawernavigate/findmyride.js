@@ -21,6 +21,9 @@ const FindMyRide = ({ navigation, route }) => {
   const [nearestAirportCode, setNearestAirportCode] = useState("");
   const [crewAirLineScheduledJob, setCrewAirLineScheduledJob] = useState([]);
   const [date, setDate] = useState("");
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
+  const [airPortCode, setAirportCode] = useState("");
 
   async function getAirportCode() {
     const userId = await AsyncStorage.getItem("UserId");
@@ -90,6 +93,10 @@ const FindMyRide = ({ navigation, route }) => {
       airLineCode
     );
 
+    setUserId(userId);
+    setUserName(fullName);
+    setAirportCode(airportCode);
+
     axiosPost("Airlines/GetCrewAirlines", {
       StartDate: moment(todayDate, "YYYY-MM-DDTHH:mm:ss.sssZ").format(
         "MM/DD/YYYY"
@@ -112,7 +119,17 @@ const FindMyRide = ({ navigation, route }) => {
       }
     });
   }
-  const Item = ({ airlineInfo, flightTime, rideType }) => (
+  const Item = ({
+    airlineInfo,
+    flightTime,
+    rideType,
+    airlineNumber,
+    airportCode,
+    pickupTime,
+    userId,
+    userName,
+    airlineCode,
+  }) => (
     <View
       style={{
         flexDirection: "row",
@@ -130,7 +147,18 @@ const FindMyRide = ({ navigation, route }) => {
         ) : null}
         <Text
           onPress={() => {
-            navigation.navigate("SelectedRides");
+            navigation.navigate("DrawerNavigationRoutes", {
+              screen: "Selectedrides",
+              params: {
+                airlineNo: airlineNumber,
+                imei: "",
+                airportCode: airportCode,
+                pickupDateTime: pickupTime,
+                userId: userId,
+                userName: userName,
+                airlineCode: airlineCode,
+              },
+            });
           }}
           style={styles.title}
         >
@@ -489,6 +517,12 @@ const FindMyRide = ({ navigation, route }) => {
                   airlineInfo={item.AirlineInfo}
                   flightTime={item.FlightTime}
                   rideType={item.RideType}
+                  airlineNumber={item.AirlineNumber}
+                  airportCode={airPortCode}
+                  pickupTime={item.PickupTime} //formate mm/dd/yyyy
+                  userId={userId}
+                  userName={userName}
+                  airlineCode={item.AirlineCode}
                 />
               )}
               ItemSeparatorComponent={ItemSeparatorView}

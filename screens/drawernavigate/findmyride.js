@@ -129,6 +129,7 @@ const FindMyRide = ({ navigation, route }) => {
     userId,
     userName,
     airlineCode,
+    airportName,
   }) => (
     <View
       style={{
@@ -523,6 +524,7 @@ const FindMyRide = ({ navigation, route }) => {
                   userId={userId}
                   userName={userName}
                   airlineCode={item.AirlineCode}
+                  airportName={item.AirportName}
                 />
               )}
               ItemSeparatorComponent={ItemSeparatorView}

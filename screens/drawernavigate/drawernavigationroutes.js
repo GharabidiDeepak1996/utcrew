@@ -68,7 +68,7 @@ function FindMyRideScreenStack({ navigation }) {
 }
 
 function SelectedRideStack({ route, navigation }) {
-  // console.log("params546", route.params);
+  console.log("params546", route.params);
 
   return (
     <Stack.Navigator>

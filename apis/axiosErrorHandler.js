@@ -4,7 +4,6 @@ export const axiosErrorHandler = (error) => {
     return { message: `Request cancelled ${error.message}` };
   }
   const { request, response } = error;
-  debugger;
   console.log("Error Message", request, response, error);
   if (response) {
     let message = "";

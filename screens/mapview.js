@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import MapView, {
   Marker,
   Polyline,
@@ -10,6 +10,8 @@ import MapView, {
 import * as Location from "expo-location";
 import { axiosPost } from "../apis/useAxios";
 import { FontAwesome5 } from "@expo/vector-icons";
+import MaterialCommunityIcons from "react-native-vector-icons/Ionicons";
+import { checkPluginState } from "react-native-reanimated/lib/reanimated2/core";
 
 const TrackVehicle = ({ route, navigation }) => {
   const initialRegion = {
@@ -20,8 +22,12 @@ const TrackVehicle = ({ route, navigation }) => {
   const [vehicleLocation, setVehicleLocation] = useState(initialRegion);
   const [mapRegion, setRegion] = useState(null);
   const [hasLocationPermissions, setLocationPermission] = useState(false);
+  const [tripStatus, setTripStatus] = useState();
+  const [driverImage, setDriverImage] = useState();
+  const [driverNo, setDriverNo] = useState();
   // const GOOGLE_MAPS_APIKEY = "AIzaSyCYvMpmVhFc0ydILEuXGJNYNGFnBoKPCL8";
-  const { rideId, userId } = route?.params || {};
+  const { rideId, userId, tripStatusId, vehicleNo, vehicleType, driverName } =
+    route?.params || {};
   let iz = {
     latDelta: 0.015,
     longDelta: 0.08,
@@ -46,14 +52,26 @@ const TrackVehicle = ({ route, navigation }) => {
       Longitude: longitude,
     }).then((response) => {
       const { IsSuccess, MultipleTrackVehicle } = { ...response };
-      const [{ AffiliateName, AffliateId, Latitude, Longitude }] = [
-        ...MultipleTrackVehicle,
-      ];
+      const [
+        {
+          AffiliateName,
+          AffliateId,
+          Latitude,
+          Longitude,
+          TripStatus,
+          ImageURL,
+          DriverMobile,
+        },
+      ] = [...MultipleTrackVehicle];
       if (IsSuccess) {
         setVehicleLocation({
           longitude: Longitude,
           latitude: Latitude,
         });
+
+        setDriverImage(ImageURL);
+        setDriverNo(DriverMobile);
+        setTripStatus(TripStatus);
         //setVehicleLocation(JSON.stringify({ Latitude, Longitude }));
       }
     });
@@ -93,8 +111,20 @@ const TrackVehicle = ({ route, navigation }) => {
     };
 
     getLocationAsync();
-  }, []);
 
+    CheckTripStatus();
+  }, [tripStatus]);
+
+  debugger;
+  function CheckTripStatus() {
+    if (tripStatusId == 101) {
+      setTripStatus("Job Not Started");
+    } else if (tripStatusId == 104) {
+      setTripStatus("Driver En Route");
+    } else {
+      setTripStatus("Error");
+    }
+  }
   const [coordinates] = useState([
     {
       latitude: 18.943161386609436,
@@ -119,7 +149,7 @@ const TrackVehicle = ({ route, navigation }) => {
         }}
       >
         <FontAwesome5 name="walking" size={20} color="black" />
-        <Text style={{ marginLeft: 10 }}>Job not started</Text>
+        <Text style={{ marginLeft: 10 }}>{tripStatus}</Text>
       </View>
       <MapView
         style={styles.map}
@@ -163,26 +193,105 @@ const TrackVehicle = ({ route, navigation }) => {
 
       <View
         style={{
-          flexDirection: "row",
-          marginVertical: "100%",
-          backgroundColor: "transparent",
+          justifyContent: "flex-end",
+          flex: 1,
+          marginBottom: 30,
+          width: "100%",
         }}
       >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(255,255,255,0.7)",
-            paddingHorizontal: 18,
-            paddingVertical: 12,
-            borderRadius: 20,
-          }}
-        >
-          <Text>Tap on markers to see different callouts</Text>
+        <View style={{ marginHorizontal: 20 }}>
+          <View
+            style={{
+              marginBottom: 18,
+              backgroundColor: "red",
+              height: 90,
+              borderRadius: 12,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                flex: 1,
+                justifyContent: "space-around",
+              }}
+            >
+              <View
+                style={{
+                  justifyContent: "center",
+                  flex: 1,
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  // source={require('../assets/car_top_view')}
+                  source={{
+                    uri:
+                      driverImage != null
+                        ? driverImage
+                        : "http://cdn.utwiz.com/DriverImages/blankuser.jpg",
+                  }}
+                  style={{
+                    width: 65,
+                    height: 65,
+                    borderRadius: 400 / 2,
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  flex: 2,
+                }}
+              >
+                <Text style={{ color: "white" }}>{driverName}</Text>
+                <Text style={{ color: "white" }}>
+                  {vehicleNo + "." + vehicleType}{" "}
+                </Text>
+              </View>
+              <View
+                style={{
+                  justifyContent: "center",
+                  flex: 1,
+                }}
+              >
+                <TouchableOpacity
+                  style={{
+                    height: 40,
+                    width: 40,
+                    backgroundColor: "green",
+                    borderRadius: 30,
+                    justifyContent: "center",
+                  }}
+                  onPress={() => {
+                    console.log("Driver No", "driverNo");
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name={"ios-call"}
+                    color={"white"}
+                    size={18}
+                    style={{ alignSelf: "center" }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            // onPress={() => show()}  styles.bubble,
+            style={{
+              alignItems: "center",
+              backgroundColor: "red",
+              paddingVertical: 10,
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 20 }}>
+              I'm at the pick-up pont !
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
-      {/* <View style={{ backgroundColor: "black", height: 50, width: "100%" }}>
-        <Text>sjggsdg</Text>
-      </View> */}
     </View>
   );
 };
@@ -190,13 +299,28 @@ export default TrackVehicle;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    // ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFillObject,
+
     // justifyContent: "flex-end",
-    // alignItems: "center",
+    alignItems: "center",
   },
   map: {
     marginTop: 50,
     ...StyleSheet.absoluteFillObject,
+  },
+  buttonContainer: {
+    backgroundColor: "transparent",
+  },
+  bubble: {
+    backgroundColor: "rgba(25,255,255,0.7)",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 20,
+  },
+  button: {
+    width: "100%",
+    alignItems: "center",
+    backgroundColor: "red",
+    paddingVertical: 10,
   },
 });

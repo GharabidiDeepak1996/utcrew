@@ -165,11 +165,23 @@ export default function TabTwoScreen({ provider }) {
         />
       </MapView>
       <View style={styles.buttonContainer}>
-        <View style={styles.bubble}>
-          <Text>Tap on markers to see different callouts</Text>
+        <View
+          style={{
+            backgroundColor: "rgba(25,255,255,0.7)",
+            paddingHorizontal: 35,
+            paddingVertical: 12,
+            borderRadius: 20,
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ flexDirection: "column" }}>
+              <Text>Tap on markers to see different callouts</Text>
+              <Text>Tap on markers to see different callouts</Text>
+            </View>
+          </View>
         </View>
       </View>
-      <View style={styles.buttonContainer}>
+      <View>
         <TouchableOpacity
           onPress={() => show()}
           style={[styles.bubble, styles.button]}

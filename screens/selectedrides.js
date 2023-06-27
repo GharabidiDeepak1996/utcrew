@@ -54,6 +54,7 @@ const SelectedRides = ({ route, navigation }) => {
     airlineNo,
     airportName,
     driverId,
+    driverName,
     dropOffLocation,
     flightDateTime,
     icaoFlightCode,
@@ -298,6 +299,10 @@ const SelectedRides = ({ route, navigation }) => {
               navigation.navigate("trackVehicle", {
                 rideId: rideId,
                 userId: userId,
+                tripStatusId: tripStatusId,
+                vehicleNo: vehicleNo,
+                vehicleType: vehicleType,
+                driverName: driverName,
               });
             }
           }}
@@ -362,8 +367,13 @@ const SelectedRides = ({ route, navigation }) => {
           />
 
           <View style={{ flex: 1, marginLeft: 8 }}>
-            <Text style={{ color: "white" }}>DL 556</Text>
-            <Text style={{ color: "white" }}>DL -ww Delta Air Lines</Text>
+            <Text style={{ color: "white" }}>
+              {airlineCode + " " + airlineNo}
+            </Text>
+            <Text style={{ color: "white" }}>
+              asa
+              {/* {airlineCode + " " + searchRides[0].AirlineName} */}
+            </Text>
           </View>
           <Text
             style={{
@@ -372,7 +382,8 @@ const SelectedRides = ({ route, navigation }) => {
               textAlign: "center",
             }}
           >
-            John F kennedy International Airport
+            sd
+            {/* {searchRides[0].AirportName} */}
           </Text>
         </View>
         <View
@@ -441,6 +452,7 @@ const SelectedRides = ({ route, navigation }) => {
             airlineNo={item.AirlineNo}
             airportName={item.AirportName} //formate mm/dd/yyyy
             driverId={item.DriverId}
+            driverName={item.DriverName}
             dropOffLocation={item.DropoffLocation}
             flightDateTime={item.FlightDateTime}
             icaoFlightCode={item.ICAOFlightCode}

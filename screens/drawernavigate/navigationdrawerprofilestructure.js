@@ -17,10 +17,10 @@ const NavigationDrawerProfileStructure = (props) => {
       <View style={stylesSidebar.profileHeader}>
         <View style={stylesSidebar.profileHeaderPicCircle}>
           <Text style={{ fontSize: 25, color: "#307ecc" }}>
-            {"About React".charAt(0)}
+            {"Delta AL".charAt(0)}
           </Text>
         </View>
-        <Text style={stylesSidebar.profileHeaderText}>AboutReact</Text>
+        <Text style={stylesSidebar.profileHeaderText}>Delta AL</Text>
       </View>
       <View style={stylesSidebar.profileHeaderLine} />
 
@@ -65,13 +65,13 @@ const stylesSidebar = StyleSheet.create({
   sideMenuContainer: {
     width: "100%",
     height: "100%",
-    backgroundColor: "#307ecc",
+    backgroundColor: "black",
     paddingTop: 40,
     color: "white",
   },
   profileHeader: {
     flexDirection: "row",
-    backgroundColor: "#307ecc",
+    backgroundColor: "black",
     padding: 15,
     textAlign: "center",
   },

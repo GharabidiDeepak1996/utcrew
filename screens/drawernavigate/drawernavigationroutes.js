@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View, Image, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Entypo, MaterialIcons, AntDesign } from "@expo/vector-icons";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -28,14 +28,52 @@ function DrawerNavigationRoutes({ route, navigation }) {
       // }}
       //drawerContent={(props) => <CustomDrawerContent {...props} />}>
       drawerContent={NavigationDrawerProfileStructure}
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        drawerActiveBackgroundColor: "black",
+        drawerActiveTintColor: "white",
+        drawerInactiveTintColor: "gray",
+        drawerLabelStyle: {
+          marginLeft: -25,
+          fontSize: 15,
+          fontFamily: "Roboto-Medium",
+        },
+      }}
       initialRouteName="Findmyride"
     >
-      <Drawer.Screen name="Findmyride" component={FindMyRideScreenStack} />
-      <Drawer.Screen name="Selectedrides" component={SelectedRideStack} />
-      {/* <Drawer.Screen name="feedback" component={feedbackScreenStack} />
-      <Drawer.Screen name="about" component={feedbackScreenStack} />
-      <Drawer.Screen name="logout" component={feedbackScreenStack} /> */}
+      <Drawer.Screen
+        name="Find My Ride"
+        component={FindMyRideScreenStack}
+        options={{
+          headerTitleStyle: { color: "red" },
+          drawerIcon: ({ focused, size, color }) => (
+            <Entypo name="location-pin" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Feedback"
+        component={FeedbackScreenStack}
+        options={{
+          headerTitleStyle: { color: "red" },
+          drawerIcon: ({ focused, size, color }) => (
+            <MaterialIcons name="feedback" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="About"
+        component={FeedbackScreenStack}
+        options={{
+          headerTitleStyle: { color: "red" },
+          drawerIcon: ({ focused, size, color }) => (
+            <AntDesign name="infocirlce" size={24} color={color} />
+          ),
+        }}
+      />
+      {/* <Drawer.Screen name="Logout" component={feedbackScreenStack} /> */}
+
+      {/* <Drawer.Screen name="Selectedride" component={SelectedRideStack} /> */}
     </Drawer.Navigator>
   );
 }
@@ -107,35 +145,27 @@ function SelectedRideStack({ route, navigation }) {
     </Stack.Navigator>
   );
 }
-function feedbackScreenStack({ navigation }) {
+function FeedbackScreenStack({ navigation }) {
   return (
-    <Stack.Navigator
-      initialRouteName="FeedBack"
-      screenOptions={{
-        headerLeft: () => (
-          <NavigationDrawerStructure navigationProps={navigation} />
-        ),
-        headerStyle: {
-          backgroundColor: "#f4511e", //Set Header color
-        },
-        headerTintColor: "#fff", //Set Header text color
-        headerTitleStyle: {
-          fontWeight: "bold", //Set Header text style
-        },
-      }}
-    >
+    <Stack.Navigator>
       <Stack.Screen
         name="FeedBack"
         component={FeedBack}
         options={{
-          title: "FeedBack", //Set Header Title
-        }}
-      />
-      <Stack.Screen
-        name="About"
-        component={About}
-        options={{
-          title: "About", //Set Header Title
+          headerTitle: "Feedback",
+          headerTitleAlign: "left",
+          headerLeft: () => (
+            <NavigationDrawerStructure navigationProps={navigation} />
+          ),
+
+          headerStyle: {
+            backgroundColor: "gray", //Set Header color
+          },
+          headerTintColor: "white", //Set Header text color
+          headerTitleStyle: {
+            fontWeight: "bold", //Set Header text style
+          },
+          //title: "FeedBack", //Set Header Title
         }}
       />
     </Stack.Navigator>

@@ -24,7 +24,9 @@ const Search = ({ route, navigation }) => {
   useEffect(() => {
     if (id == 0) {
       getAirLineData();
-    } else {
+    } else if (id == 1) {
+      getAirPort();
+    } else if (id == 2) {
       getAirPort();
     }
   }, []);
@@ -114,7 +116,7 @@ const Search = ({ route, navigation }) => {
         <Text
           style={styles.itemStyle}
           onPress={() => {
-            //0 - for registration, 1 - for findmyride
+            //0 - for registration, 1 - for findmyride , 2 - feedback
             if (id == 0) {
               navigation.navigate("registration", {
                 airlineId: item.Id,
@@ -122,6 +124,12 @@ const Search = ({ route, navigation }) => {
               });
             } else if (id == 1) {
               navigation.navigate("FindMyRide", {
+                airportId: item.Id,
+                airportCode: item.Code,
+                airportName: item.Name,
+              });
+            } else if (id == 2) {
+              navigation.navigate("FeedBack", {
                 airportId: item.Id,
                 airportCode: item.Code,
                 airportName: item.Name,

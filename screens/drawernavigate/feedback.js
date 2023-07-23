@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useRef,useCallback,useMemo,useEffect } from "react";
 import {
   View,
   Text,
@@ -11,8 +11,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import { RadioButton } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet from "reanimated-bottom-sheet";
-import Animated from "react-native-reanimated";
+import BottomSheet,{BottomSheetView} from '@gorhom/bottom-sheet';
 
 const FeedBack = ({ navigation, route }) => {
   const today = new Date();
@@ -28,6 +27,16 @@ const FeedBack = ({ navigation, route }) => {
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
 
+  //hook
+  const bottomSheetRef = useRef(null);
+// variables
+  const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
+ // const snapPoints = ["40%"]
+  // callbacks
+  const handleSheetChanges = useCallback((index) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
   const starImageFilled =
     "https://raw.githubusercontent.com/AboutReact/sampleresource/master/star_filled.png";
   const starImageCorner =
@@ -41,34 +50,11 @@ const FeedBack = ({ navigation, route }) => {
     setOpen(!open);
   }
 
-  renderHeader = () => (
-    //header,panelHeader,panelHandel
-    <View
-      style={{
-        backgroundColor: "fffff",
-        shadowColor: "#333333",
-        shadowOffset: { width: -1, height: -3 },
-        shadowRadius: 2,
-        shadowOpacity: 0.4,
-        paddingTop: 20,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-      }}
-    >
-      <View style={{ alignItems: "center" }}>
-        <View
-          style={{
-            width: 40,
-            height: 8,
-            borderRadius: 4,
-            backgroundColor: "#00000040",
-            marginBottom: 10,
-          }}
-        />
-      </View>
-    </View>
-  );
-
+  function handleBottomSheet(){
+    bottomSheetRef.current?.initialSnapIndex(1)
+  }
+  
+ 
   return (
     <View
       style={{
@@ -76,8 +62,10 @@ const FeedBack = ({ navigation, route }) => {
         flex: 1,
       }}
     >
+        
       <ScrollView>
         <View style={{ marginVertical: 12, marginHorizontal: 18 }}>
+       
           <Text style={{ color: "white", fontSize: 16 }}>
             Please fill out this form to send your feedback.
           </Text>
@@ -312,7 +300,7 @@ const FeedBack = ({ navigation, route }) => {
             Take a picture of your transportation and send it to us.
           </Text>
           {/* ====Upload photo==== */}
-
+       
           <View
             style={{
               marginTop: 10,
@@ -327,7 +315,8 @@ const FeedBack = ({ navigation, route }) => {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => {
-                console.log("sds");
+               handleBottomSheet()
+              //  bs.current.snapTo(0)
               }}
             >
               <Ionicons name="add-circle-sharp" size={66} color="gray" />
@@ -335,6 +324,16 @@ const FeedBack = ({ navigation, route }) => {
           </View>
         </View>
       </ScrollView>
+      <BottomSheet
+        ref={bottomSheetRef}
+        initialSnapIndex={0}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+      >
+        <BottomSheetView>
+          <Text>sdfk</Text>
+        </BottomSheetView>
+      </BottomSheet>
     </View>
   );
 };

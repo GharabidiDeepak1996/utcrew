@@ -1,4 +1,10 @@
-import React, { useState,useRef,useCallback,useMemo,useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+} from "react";
 import {
   View,
   Text,
@@ -11,11 +17,16 @@ import { ScrollView } from "react-native-gesture-handler";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import { RadioButton } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet,{BottomSheetView} from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+//import { Camera } from "expo-camera";
+import ImagePicker from "expo-image-picker";
 
 const FeedBack = ({ navigation, route }) => {
-  const today = new Date();
+  //permission
+  // let cameraRef = useRef();
+  // const [hasCameraPermission, setHasCameraPermission] = useState();
 
+  const today = new Date();
   const startDate = getFormatedDate(
     today.setDate(today.getDate()),
     "YYYY/MM/DD"
@@ -26,15 +37,16 @@ const FeedBack = ({ navigation, route }) => {
   const [date, setDate] = useState(startDate);
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
+  const [pickedImagePath, setPickedImagePath] = useState(null);
 
   //hook
   const bottomSheetRef = useRef(null);
-// variables
-  const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
- // const snapPoints = ["40%"]
+  // variables
+  const snapPoints = useMemo(() => ["30%", "30%", "30%"], []);
+  //onst snapPoints = [300, 0];
   // callbacks
   const handleSheetChanges = useCallback((index) => {
-    console.log('handleSheetChanges', index);
+    console.log("handleSheetChanges", index);
   }, []);
 
   const starImageFilled =
@@ -50,11 +62,55 @@ const FeedBack = ({ navigation, route }) => {
     setOpen(!open);
   }
 
-  function handleBottomSheet(){
-    bottomSheetRef.current?.initialSnapIndex(1)
+  const handleBottomSheet = useCallback(() => {
+    bottomSheetRef.current.snapToIndex(0);
+  }, []);
+
+  const handleBottomCloseSheet = useCallback(() => {
+    bottomSheetRef.current.close();
+  }, []);
+
+  async function selectImage() {
+    //Ask the user permission to access the media libery, SDK 44, a permission request is no longer necessary
+    // let permissionResult = await ImagePicker.getMediaLibraryPermissionsAsync();
+
+    // if (permissionResult.granted === false) {
+    //   alert("you refused to allow this app to access your photos");
+    //   return;
+    // }
+
+    let result = await ImagePicker.launchImageLibraryAsync;
+
+    // let result = await ImagePicker.launchImageLibraryAsync({
+    //   mediaTypes: ImagePicker.MediaTypeOptions.All,
+    //   allowsEditing: true,
+    //   aspect: [4, 3],
+    //   quality: 1,
+    // });
+
+    // Explore the result
+    console.log(result);
+
+    if (!result.canceled) {
+      setPickedImagePath(result.uri);
+      console.log(result.uri);
+    }
   }
-  
- 
+  // useEffect(() => {
+  //   async () => {
+  //     const cameraPermission = await Camera.requestCameraPermissionsAsync();
+  //     setHasCameraPermission(cameraPermission.status === "granted");
+  //   };
+  // }, []);
+  // if (hasCameraPermission === undefined) {
+  //   return <Text>Requesting permission...</Text>;
+  // } else if (!hasCameraPermission) {
+  //   return (
+  //     <Text>
+  //       Permission for camera not granted.Please change this in settings.
+  //     </Text>
+  //   );
+  // }
   return (
     <View
       style={{
@@ -62,10 +118,8 @@ const FeedBack = ({ navigation, route }) => {
         flex: 1,
       }}
     >
-        
       <ScrollView>
         <View style={{ marginVertical: 12, marginHorizontal: 18 }}>
-       
           <Text style={{ color: "white", fontSize: 16 }}>
             Please fill out this form to send your feedback.
           </Text>
@@ -300,7 +354,7 @@ const FeedBack = ({ navigation, route }) => {
             Take a picture of your transportation and send it to us.
           </Text>
           {/* ====Upload photo==== */}
-       
+
           <View
             style={{
               marginTop: 10,
@@ -315,8 +369,8 @@ const FeedBack = ({ navigation, route }) => {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => {
-               handleBottomSheet()
-              //  bs.current.snapTo(0)
+                handleBottomSheet();
+                //  bs.current.snapTo(0)
               }}
             >
               <Ionicons name="add-circle-sharp" size={66} color="gray" />
@@ -326,12 +380,63 @@ const FeedBack = ({ navigation, route }) => {
       </ScrollView>
       <BottomSheet
         ref={bottomSheetRef}
-        initialSnapIndex={0}
+        index={-1}
         snapPoints={snapPoints}
         onChange={handleSheetChanges}
       >
         <BottomSheetView>
-          <Text>sdfk</Text>
+          <View>
+            <View style={{ alignItems: "center" }}>
+              <Text>Please select any one.</Text>
+            </View>
+            <TouchableOpacity
+              style={{
+                padding: 13,
+                borderRadius: 10,
+                backgroundColor: "#FF6347",
+                alignItems: "center",
+                marginVertical: 12,
+                marginHorizontal: 18,
+              }}
+            >
+              <Text
+                style={{ fontSize: 17, fontWeight: "bold", color: "white" }}
+              >
+                Take Photo
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                padding: 13,
+                borderRadius: 10,
+                backgroundColor: "#FF6347",
+                alignItems: "center",
+                marginVertical: 6,
+                marginHorizontal: 18,
+              }}
+              onPress={() => {
+                selectImage();
+              }}
+            >
+              <Text
+                style={{ fontSize: 17, fontWeight: "bold", color: "white" }}
+              >
+                Choose from gallery
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                alignItems: "center",
+                marginVertical: 6,
+                marginHorizontal: 18,
+              }}
+              onPress={() => {
+                handleBottomCloseSheet();
+              }}
+            >
+              <Text>Cancel</Text>
+            </TouchableOpacity>
+          </View>
         </BottomSheetView>
       </BottomSheet>
     </View>

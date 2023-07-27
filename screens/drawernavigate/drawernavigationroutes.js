@@ -33,6 +33,7 @@ function DrawerNavigationRoutes({ route, navigation }) {
     >
       <Drawer.Screen name="Findmyride" component={FindMyRideScreenStack} />
       <Drawer.Screen name="Selectedrides" component={SelectedRideStack} />
+      <Drawer.Screen name="About" component={AboutStack} />
       {/* <Drawer.Screen name="feedback" component={feedbackScreenStack} />
       <Drawer.Screen name="about" component={feedbackScreenStack} />
       <Drawer.Screen name="logout" component={feedbackScreenStack} /> */}
@@ -107,6 +108,47 @@ function SelectedRideStack({ route, navigation }) {
     </Stack.Navigator>
   );
 }
+
+function AboutStack({ route, navigation }) {
+  // console.log("params546", route.params);
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="About"
+        component={About}
+        options={{
+          headerTitle: "About",
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                height: 40,
+                marginRight: 18,
+              }}
+              activeOpacity={0.5}
+              onPress={() => {
+                navigation.navigate("FindMyRide");
+              }}
+            >
+              <Ionicons name="md-arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+            // <NavigationDrawerStructure navigationProps={navigation} />
+          ),
+          headerStyle: {
+            backgroundColor: "#454545", //Set Header color
+          },
+          headerTintColor: "white", //Set Header text color
+          headerTitleStyle: {
+            fontWeight: "bold", //Set Header text style
+          },
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function feedbackScreenStack({ navigation }) {
   return (
     <Stack.Navigator

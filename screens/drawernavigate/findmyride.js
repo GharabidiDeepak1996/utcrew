@@ -41,6 +41,7 @@ const FindMyRide = ({ navigation, route }) => {
       setErrorMsg("Permission to access location was denied");
       return;
     }
+    
     let location = await Location.getCurrentPositionAsync({});
 
     if (airportCode != undefined) {

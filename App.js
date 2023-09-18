@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator
+      <Stack.Navigator      
         initialRouteName="splashscreen"
         screenOptions={{ headerShown: false }}
       >

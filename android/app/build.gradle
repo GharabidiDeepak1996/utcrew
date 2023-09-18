@@ -113,7 +113,7 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.utcrew"
+    namespace 'com.utcrew'
     defaultConfig {
         applicationId 'com.utcrew'
         minSdkVersion rootProject.ext.minSdkVersion
